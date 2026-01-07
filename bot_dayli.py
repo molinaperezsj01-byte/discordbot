@@ -15,7 +15,7 @@ def generar_texto_daily():
         print("⚠️ No se encontró la API Key")
         return random.choice(preguntas)
 
-    client = InferenceClient(model="google/flan-t5-small", token=api_key)
+    client = InferenceClient(model="google/flan-t5-base", token=api_key)
 
     try:
         response = client.text_generation(
