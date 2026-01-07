@@ -3,16 +3,14 @@ import os
 import discord
 from discord.ext import commands, tasks
 import random
-import aiohttp
 
 intents = discord.Intents.default()
-intents.message_content = True  # 🔑 necesario para que funcione !pregunta
+intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 
 def generar_texto_daily():
     api_key = os.getenv("AI_API_KEY")
-    # 🔄 modelo más rápido y ligero
     client = InferenceClient(model="tiiuae/falcon-7b-instruct", token=api_key)
 
     response = client.text_generation(
@@ -22,8 +20,6 @@ def generar_texto_daily():
     print("Respuesta IA:", response)
     return response.strip()
 
-
-# Lista de preguntas
 
 preguntas = [
     "¿Cuál es tu comida favorita? 🍕",
@@ -42,16 +38,14 @@ preguntas = [
 @bot.event
 async def on_ready():
     print(f"✅ Bot conectado como {bot.user}")
-    pregunta_diaria.start()  # Inicia la tarea automática
-
-# Tarea que se ejecuta cada 24 hora
+    pregunta_diaria.start()
 
 
 @tasks.loop(hours=24)
 async def pregunta_diaria():
     canal = bot.get_channel(1261175263190978610)
     try:
-        pregunta = generar_texto_daily()  # ahora es síncrona
+        pregunta = generar_texto_daily()
     except Exception as e:
         print(f"Error con IA: {e}")
         pregunta = random.choice(preguntas)
@@ -64,7 +58,7 @@ async def pregunta_diaria():
 @bot.command()
 async def pregunta(ctx):
     try:
-        pregunta = await generar_texto_daily()
+        pregunta = generar_texto_daily()  # 👈 ya no lleva await
     except Exception:
         pregunta = random.choice(preguntas)
 
