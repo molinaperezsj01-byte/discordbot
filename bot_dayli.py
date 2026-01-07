@@ -47,6 +47,5 @@ async def pregunta(ctx):
     pregunta = random.choice(preguntas)
     await ctx.send(f"📢@everyone Buenos dias miembros Pregunta del día: {pregunta} respondan con @PreguntaDelDiaBot#3980")
 
-# Reemplaza con el token de tu bot
 
 bot.run(os.getenv("DISCORD_TOKEN"))
