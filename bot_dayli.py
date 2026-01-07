@@ -1,39 +1,15 @@
-from huggingface_hub import InferenceClient
 import os
 import discord
 from discord.ext import commands, tasks
 import random
+import cohere
 
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-
-def generar_texto_daily():
-    api_key = os.getenv("AI_API_KEY")
-    if not api_key:
-        print("⚠️ No se encontró la API Key")
-        return random.choice(preguntas)
-
-    client = InferenceClient(model="google/flan-t5-base", token=api_key)
-
-    try:
-        response = client.text_generation(
-            "Genera una pregunta del día en español:",
-            max_new_tokens=50
-        )
-        print("Respuesta IA:", response)
-
-        # Validar que sea un string y no esté vacío
-        if isinstance(response, str) and response.strip():
-            return response.strip()
-        else:
-            print("⚠️ El modelo devolvió vacío")
-            return random.choice(preguntas)
-    except Exception as e:
-        print("⚠️ Error con IA:", repr(e))
-        return random.choice(preguntas)
-
+# Inicializar Cohere
+co = cohere.Client(os.getenv("COHERE_API_KEY"))
 
 preguntas = [
     "¿Cuál es tu comida favorita? 🍕",
@@ -49,6 +25,21 @@ preguntas = [
 ]
 
 
+def generar_texto_daily():
+    try:
+        response = co.generate(
+            model="command-r",  # modelo recomendado por Cohere
+            prompt="Genera una pregunta del día en español:",
+            max_tokens=50
+        )
+        texto = response.generations[0].text.strip()
+        print("Respuesta IA:", texto)
+        return texto if texto else random.choice(preguntas)
+    except Exception as e:
+        print("⚠️ Error con Cohere:", repr(e))
+        return random.choice(preguntas)
+
+
 @bot.event
 async def on_ready():
     print(f"✅ Bot conectado como {bot.user}")
@@ -58,12 +49,7 @@ async def on_ready():
 @tasks.loop(hours=24)
 async def pregunta_diaria():
     canal = bot.get_channel(1261175263190978610)
-    try:
-        pregunta = generar_texto_daily()
-    except Exception as e:
-        print(f"Error con IA: {e}")
-        pregunta = random.choice(preguntas)
-
+    pregunta = generar_texto_daily()
     await canal.send(
         f"📢 @everyone Buenos días miembros\nPregunta del día: {pregunta}\nRespondan con @PreguntaDelDiaBot#3980 en general"
     )
@@ -71,11 +57,7 @@ async def pregunta_diaria():
 
 @bot.command()
 async def pregunta(ctx):
-    try:
-        pregunta = generar_texto_daily()  # 👈 ya no lleva await
-    except Exception:
-        pregunta = random.choice(preguntas)
-
+    pregunta = generar_texto_daily()
     await ctx.send(
         f"📢 @everyone Buenos días miembros\nPregunta del día: {pregunta}\nRespondan con @PreguntaDelDiaBot#3980 en general"
     )
