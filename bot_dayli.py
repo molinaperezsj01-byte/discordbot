@@ -41,7 +41,7 @@ async def on_ready():
     print(f"✅ Bot conectado como {bot.user}")
     pregunta_diaria.start()  # Inicia la tarea automática
 
-# Tarea que se ejecuta cada 24 horas
+# Tarea que se ejecuta cada 24 hora
 
 
 @tasks.loop(hours=24)
