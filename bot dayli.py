@@ -37,7 +37,7 @@ async def pregunta_diaria():
     # Reemplaza con el ID de tu canal
     canal = bot.get_channel(1261175263190978610)
     pregunta = random.choice(preguntas)
-    await canal.send(f"📢@everyone Pregunta del día: {pregunta}")
+    await canal.send(f"📢@everyone Buenos dias miembros Pregunta del día: {pregunta} respondan con @PreguntaDelDiaBot#3980")
 
 # Comando manual por si quieres lanzar una pregunta al instante
 
@@ -45,7 +45,7 @@ async def pregunta_diaria():
 @bot.command()
 async def pregunta(ctx):
     pregunta = random.choice(preguntas)
-    await ctx.send(f"📢@everyone Pregunta del día: {pregunta}")
+    await ctx.send(f"📢@everyone Buenos dias miembros Pregunta del día: {pregunta} respondan con @PreguntaDelDiaBot#3980")
 
 # Reemplaza con el token de tu bot
 
