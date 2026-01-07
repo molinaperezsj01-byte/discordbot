@@ -1,3 +1,4 @@
+from huggingface_hub import InferenceClient
 import os
 import discord
 from discord.ext import commands, tasks
@@ -9,31 +10,17 @@ intents.message_content = True  # 🔑 necesario para que funcione !pregunta
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 
-async def generar_texto_daily():
+def generar_texto_daily():
     api_key = os.getenv("AI_API_KEY")
-    if not api_key:
-        raise ValueError(
-            "No se encontró la API Key en las variables de entorno")
+    # 🔄 modelo más rápido y ligero
+    client = InferenceClient(model="tiiuae/falcon-7b-instruct", token=api_key)
 
-    url = "https://router.huggingface.co/models/bigscience/bloom"
-    headers = {"Authorization": f"Bearer {api_key}"}
-    payload = {"inputs": "Genera una pregunta del día en español:"}
-
-    async with aiohttp.ClientSession() as session:
-        async with session.post(url, headers=headers, json=payload) as resp:
-            data = await resp.json()
-            print("Respuesta IA:", data)
-
-    if isinstance(data, list) and len(data) > 0 and "generated_text" in data[0]:
-        texto = data[0]["generated_text"]
-    elif isinstance(data, dict) and "generated_text" in data:
-        texto = data["generated_text"]
-    elif isinstance(data, dict) and "error" in data:
-        raise ValueError(f"Error IA: {data['error']}")
-    else:
-        raise ValueError("Respuesta IA inválida")
-
-    return texto.replace("Genera una pregunta del día en español:", "").strip()
+    response = client.text_generation(
+        "Genera una pregunta del día en español:",
+        max_new_tokens=50
+    )
+    print("Respuesta IA:", response)
+    return response.strip()
 
 
 # Lista de preguntas
@@ -62,13 +49,11 @@ async def on_ready():
 
 @tasks.loop(hours=24)
 async def pregunta_diaria():
-    canal = bot.get_channel(1261175263190978610)  # tu canal
+    canal = bot.get_channel(1261175263190978610)
     try:
-        # Intentar con IA
-        pregunta = await generar_texto_daily()
+        pregunta = generar_texto_daily()  # ahora es síncrona
     except Exception as e:
         print(f"Error con IA: {e}")
-        # Si falla, usar una pregunta random de la lista
         pregunta = random.choice(preguntas)
 
     await canal.send(
