@@ -11,7 +11,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 async def generar_texto_daily():
     api_key = os.getenv("AI_API_KEY")  # tu clave de Hugging Face
-    url = "https://api-inference.huggingface.co/models/gpt2"
+    url = "https://router.huggingface.co/models/gpt2"
     headers = {"Authorization": f"Bearer {api_key}"}
     payload = {"inputs": "Genera una pregunta del día en español:"}
 
