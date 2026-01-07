@@ -10,7 +10,11 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 
 async def generar_texto_daily():
-    api_key = os.getenv("AI_API_KEY")  # tu clave de Hugging Face
+    api_key = os.getenv("AI_API_KEY")
+    if not api_key:
+        raise ValueError(
+            "No se encontró la API Key en las variables de entorno")
+
     url = "https://router.huggingface.co/models/bigscience/bloom"
     headers = {"Authorization": f"Bearer {api_key}"}
     payload = {"inputs": "Genera una pregunta del día en español:"}
@@ -20,27 +24,16 @@ async def generar_texto_daily():
             data = await resp.json()
             print("Respuesta IA:", data)
 
-    texto = None
-
-    # Caso 1: lista con generated_text
     if isinstance(data, list) and len(data) > 0 and "generated_text" in data[0]:
         texto = data[0]["generated_text"]
-
-    # Caso 2: objeto con generated_text
     elif isinstance(data, dict) and "generated_text" in data:
         texto = data["generated_text"]
-
-    # Caso 3: error
     elif isinstance(data, dict) and "error" in data:
         raise ValueError(f"Error IA: {data['error']}")
-
-    if not texto:
+    else:
         raise ValueError("Respuesta IA inválida")
 
-    # Limpieza: quitar el prompt inicial si aparece
-    texto = texto.replace(
-        "Genera una pregunta del día en español:", "").strip()
-    return texto
+    return texto.replace("Genera una pregunta del día en español:", "").strip()
 
 
 # Lista de preguntas
