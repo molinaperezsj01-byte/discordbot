@@ -49,6 +49,10 @@ async def on_ready():
 @tasks.loop(hours=24)
 async def pregunta_diaria():
     canal = bot.get_channel(1261175263190978610)
+    if canal is None:
+        print("canal no encontrado")
+        return
+
     pregunta = generar_texto_daily()
     await canal.send(
         f"📢 @everyone Buenos días miembros\nPregunta del día: {pregunta}\nRespondan con @PreguntaDelDiaBot#3980 en general"
