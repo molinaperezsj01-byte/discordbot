@@ -9,6 +9,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 
 # Lista de preguntas
+
 preguntas = [
     "¿Cuál es tu comida favorita? 🍕",
     "¿Qué juego estás jugando últimamente? 🎮",
@@ -44,7 +45,7 @@ async def pregunta_diaria():
 @bot.command()
 async def pregunta(ctx):
     pregunta = random.choice(preguntas)
-    await ctx.send(f"📢 Pregunta del día: {pregunta}")
+    await ctx.send(f"📢@everyone Pregunta del día: {pregunta}")
 
 # Reemplaza con el token de tu bot
 
