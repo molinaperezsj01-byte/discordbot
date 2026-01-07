@@ -28,7 +28,7 @@ preguntas = [
 def generar_texto_daily():
     try:
         response = co.generate(
-            model="command-r",  # modelo recomendado por Cohere
+            model="command",  # ✅ modelo correcto
             prompt="Genera una pregunta del día en español:",
             max_tokens=50
         )
