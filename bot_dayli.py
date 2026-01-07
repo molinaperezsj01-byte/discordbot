@@ -18,7 +18,9 @@ async def generar_texto_daily():
     async with aiohttp.ClientSession() as session:
         async with session.post(url, headers=headers, json=payload) as resp:
             data = await resp.json()
+            print("Respuesta IA:", data)
     return data[0]["generated_text"].strip()
+
 
 # Lista de preguntas
 
