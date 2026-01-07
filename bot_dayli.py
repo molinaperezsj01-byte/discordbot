@@ -11,6 +11,15 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 # Inicializar Cohere
 co = cohere.Client(os.getenv("COHERE_API_KEY"))
 
+
+@bot.event
+async def on_ready():
+    print(f"✅ Bot conectado como {bot.user}")
+    for c in bot.get_all_channels():
+        print(f"Canal disponible: {c.name} (ID: {c.id})")
+    pregunta_diaria.start()
+
+
 preguntas = [
     "¿Cuál es tu comida favorita? 🍕",
     "¿Qué juego estás jugando últimamente? 🎮",
