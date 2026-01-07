@@ -11,6 +11,10 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 def generar_texto_daily():
     api_key = os.getenv("AI_API_KEY")
+    if not api_key:
+        print("⚠️ No se encontró la API Key")
+        return random.choice(preguntas)
+
     client = InferenceClient(model="google/flan-t5-small", token=api_key)
 
     try:
@@ -18,7 +22,14 @@ def generar_texto_daily():
             "Genera una pregunta del día en español:",
             max_new_tokens=50
         )
-        return response.strip()
+        print("Respuesta IA:", response)
+
+        # Validar que sea un string y no esté vacío
+        if isinstance(response, str) and response.strip():
+            return response.strip()
+        else:
+            print("⚠️ El modelo devolvió vacío")
+            return random.choice(preguntas)
     except Exception as e:
         print("⚠️ Error con IA:", repr(e))
         return random.choice(preguntas)
